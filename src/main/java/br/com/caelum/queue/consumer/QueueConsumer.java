@@ -1,14 +1,15 @@
-package br.com.caelum.consumer;
+package br.com.caelum.queue.consumer;
+
+import java.util.Scanner;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
-import javax.jms.Message;
-import javax.jms.MessageProducer;
+import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.naming.InitialContext;
 
-public class Producer {
+public class QueueConsumer {
 
 	private static final String CONNECTION_FACTORY = "ConnectionFactory";
 	private static final String FINANCEIRO = "financeiro";
@@ -21,15 +22,14 @@ public class Producer {
 		connection.start();
 		
 		Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		
 		Destination fila = (Destination) context.lookup(FINANCEIRO);
 		
-		MessageProducer producer = session.createProducer(fila);
+		MessageConsumer consumerFinanceiro = session.createConsumer(fila);
+		consumerFinanceiro.setMessageListener(new MessageListenerFinanceiro());
 		
-		for (int i = 0; i < 1000; i++) {
-			Message message = session.createTextMessage("{\"id\": " + i + ", \"nome\":\"Carlos Romano\"}");
-			producer.send(message);
-		}
-				
+		new Scanner(System.in).nextInt();
+		
 		session.close();
 		connection.close();
 		context.close();

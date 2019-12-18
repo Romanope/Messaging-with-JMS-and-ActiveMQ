@@ -1,4 +1,4 @@
-package br.com.caelum.consumer;
+package br.com.caelum.queue.consumer;
 
 import javax.jms.JMSException;
 import javax.jms.Message;

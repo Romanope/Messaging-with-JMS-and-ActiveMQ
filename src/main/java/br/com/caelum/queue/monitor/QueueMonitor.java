@@ -1,13 +1,17 @@
-package br.com.caelum.consumer;
+package br.com.caelum.queue.monitor;
+
+import java.util.Enumeration;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
-import javax.jms.MessageConsumer;
+import javax.jms.Queue;
+import javax.jms.QueueBrowser;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 import javax.naming.InitialContext;
 
-public class Consumer {
+public class QueueMonitor {
 
 	private static final String CONNECTION_FACTORY = "ConnectionFactory";
 	private static final String FINANCEIRO = "financeiro";
@@ -23,9 +27,14 @@ public class Consumer {
 		
 		Destination fila = (Destination) context.lookup(FINANCEIRO);
 		
-		MessageConsumer consumerFinanceiro = session.createConsumer(fila);
-		consumerFinanceiro.setMessageListener(new MessageListenerFinanceiro());
+		QueueBrowser messageMonitor = session.createBrowser((Queue)fila);
 		
+		Enumeration e = messageMonitor.getEnumeration();
+        while (e.hasMoreElements()) {
+            TextMessage message = (TextMessage) e.nextElement();
+            System.out.println("Browse [" + message.getText() + "]");
+        }
+				
 		session.close();
 		connection.close();
 		context.close();
